@@ -1,2 +1,2 @@
-# dbts_pred_ml
-Diabetes_prediction_using_machine_learning
+# machine-learning-ca
+Diabetes Patient Prediction for Machine Learning CA-01 project for Msc in AI

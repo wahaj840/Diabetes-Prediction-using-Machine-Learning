@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Diabetes Patient Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <h1>Diabetes Patient Prediction- ML CA 01</h1>
+    <div class="form-box">
+      <form action="{{url_for('predict_datapoint')}}" method="POST">
+          <div class="form-group">
+              <label for="glucose">Glucose:</label>
+              <input type="text" id="glucose" name="glucose" placeholder="Enter Patient's glucose level (float)">
+          </div>
+      
+          <div class="form-group">
+              <label for="bmi">BMI:</label>
+              <input type="text" id="bmi" name="bmi" placeholder="Enter Patient's BMI (float)">
+          </div>
+
+          <div class="form-group">  
+              <label for="age">Age:</label>
+              <input type="text" id="age" name="age" placeholder="Enter Patient's age (float)">
+          </div>
+
+          <div class="form-group" style="padding-top: 20px;">  
+            <label for="dpf">Diabetic Pedigree Function:</label>
+            <input name="dpf" class="slider" type="range" min="0" max="2.4" step="0.01" value="0.47" oninput="updateSliderValue(this)">
+            <p id="rangeValue">0.47</p>
+          </div>
+
+          <script>
+            function updateSliderValue(slider) {
+              const floatValue = parseFloat(slider.value).toFixed(2); // Convert slider value to float with two decimal places
+              document.getElementById('rangeValue').innerText = floatValue;
+            }
+        
+            // Initialize the slider value on page load
+            window.onload = function() {
+              const initialValue = document.querySelector('.slider').value;
+              updateSliderValue(document.querySelector('.slider'));
+            };
+          </script>
+      
+      <div style="clear:both;"></div>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <div>      
+      <h2>
+        Predicted Diabetic Result: {% if results == 0.0 %} <p style="color: #00CC66;">The Patient is not Diabetic</p> {% elif results == 1.0 %} <p style="color: #990000;">The Patient is diabetic</p> {% endif %}
+        <p>Accuracy: {{ accuracy }}%</p>
+        <p>Mean Accuracy: {{ mean_accuracy }}%</p>
+        <p>Mean Recall: {{ recall }}%</p>
+      </h2>
+      
+      <!-- Chart.js Bar Chart -->
+      <canvas id="accuracyChart" width="300" height="150" style="background-color: #E1E5F8;padding: 20px;"></canvas>
+      <script>
+        // Set up Chart.js bar chart
+        var ctx = document.getElementById('accuracyChart').getContext('2d');
+        var accuracyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Accuracy', 'Mean Accuracy', 'Mean Recall'],
+                datasets: [{
+                    label: 'Performance Metrics',
+                    data: [{{ accuracy }}, {{ mean_accuracy }}, {{ recall }}],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)', // Adjust alpha value for transparency
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                // Set a distinctive background color for the chart area
+                plugins: {
+                  legend: {
+                    display: false
+                  },
+                  tooltip: {
+                    displayColors: false
+                  }
+                }
+            }
+        });
+    </script>
+  </body>
+</html>
